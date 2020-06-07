@@ -11,6 +11,14 @@ Server = class {
     for (var client_id in this.clients) {
       var client = this.clients[client_id];
 
+      client.Update(dt);
+
+      if(client.playerEntity) {
+        client.playerEntity.position.x = client.mouse.x;
+        client.playerEntity.position.y = client.mouse.y;
+      }
+
+
       for (var entity_id in this.entities) {
         var entity = this.entities[entity_id];
 
@@ -28,11 +36,13 @@ Server = class {
   }
 
   HandleConnection(callback) {
-    var id = Utils.AvaliableId(this.clients);
-    var client = new ClientHandle(id);
-    client.playerEntity = this.CreateEntity();
-    this.clients[id] = client;
-    callback({id: id, playerEntity: client.playerEntity.id});
+
+
+    //var id = Utils.AvaliableId(this.clients);
+    //var client = new ClientHandle(id);
+    //client.playerEntity = this.CreateEntity();
+    //this.clients[id] = client;
+    //callback({id: id, playerEntity: client.playerEntity.id});
   }
 
   CreateEntity(options) {

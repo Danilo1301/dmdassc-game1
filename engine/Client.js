@@ -1,6 +1,7 @@
 Client = class extends Engine {
   constructor() {
     super();
+
     this.StartGameLoop(true);
     this.Load();
     this.StartMenu();
@@ -40,10 +41,12 @@ Client = class extends Engine {
   }
 
   SendLocalInfo() {
-    this.socket.emit("data", {id: "local_info", info: null}, (data) => {
+    this.socket.emit("data", {id: "local_info", info: {mouse: this.recorded_mouse}}, (data) => {
       this.ProcessServerInfo(data.info);
       this.SendLocalInfo();
     });
+    this.recorded_mouse = [];
+    this.lastUpdated = Date.now();
   }
 
   ProcessServerInfo(info) {
@@ -63,6 +66,9 @@ Client = class extends Engine {
   }
 
   Update(dt) {
+    if(this.recorded_mouse != undefined) {
+      this.recorded_mouse.push({t: Date.now() - this.lastUpdated, x: Input.mouse.position.x - Render.resolution.w/2, y: Input.mouse.position.y - Render.resolution.h/2});
+    }
     Gui.Update(dt);
   }
 

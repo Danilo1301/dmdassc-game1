@@ -18,7 +18,7 @@ app.get('*', function(req, res) {
   }
 
   if(req.originalUrl.startsWith("/engine/")) {
-    return res.sendFile(`${__dirname}\\${req.originalUrl.split("?")[0]}`);
+    return res.sendFile(`${__dirname}/${req.originalUrl.split("?")[0]}`);
   }
 
 

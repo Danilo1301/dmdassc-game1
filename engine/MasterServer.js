@@ -30,8 +30,7 @@ MasterServer = class extends Engine {
   OnConnection(socket) {
     var client = new ClientHandle(socket, this);
     this.clients[socket.id] = client;
-
-
+  
   }
 
   Update(dt) {

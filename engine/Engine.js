@@ -11,7 +11,7 @@ Engine = class {
   Tick(dt) {
 
     for (var server_id in this.servers) { this.servers[server_id].Update(dt); }
-    
+
     this.Update();
     if(this.Render) { this.Render(); }
   }
@@ -20,6 +20,9 @@ Engine = class {
     this.servers[server_id].clients[client.id] = client;
 
     client.server = this.servers[server_id];
+
+    var entity = client.server.CreateEntity({position: {x: 0, y: 0}});
+    client.playerEntity = entity;
 
     client.socket.emit("data", {id: "joined"});
   }
