@@ -81,7 +81,7 @@ Client = class extends Engine {
 
     Render.ctx.textAlign = "left";
     Render.ctx.fillStyle = "black";
-    Render.FillText(`${this.gameLoop.fps} FPS`, 20, 30);
+    Render.FillText(`${this.gameLoop.fps} FPS ; ${(Date.now() - client.lastUpdated) || 0} ms`, 20, 30);
   }
 
   RenderServer() {
