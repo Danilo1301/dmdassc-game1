@@ -4,7 +4,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookieParser = require('cookie-parser');
 
-var PORT = 7855;
+var PORT = process.env.is_glitch ? 3000 : 7855;
+var IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
 
 app.use(cookieParser());
 
@@ -25,7 +26,7 @@ app.get('*', function(req, res) {
   res.sendFile(`${__dirname}/public/${req.originalUrl}`);
 });
 
-http.listen(PORT, "192.168.15.14", function() {
+http.listen(PORT, IP, function() {
   console.log('[web] Listening on port ' + PORT);
 });
 
