@@ -97,6 +97,9 @@ Client = class extends Engine {
   }
 
   CreateSingleplayer() {
+    alert("Click on the button below pls :v")
+    return
+
     Gui.Hide();
     var server = this.CreateServer("local");
 
