@@ -11,7 +11,7 @@ MasterServer = class extends Engine {
 
     var es = [];
 
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < 20; i++) {
       var e = server.CreateEntity({position: {x: Math.random()*100-50, y: Math.random()*100-50}});
       es.push(e);
     }

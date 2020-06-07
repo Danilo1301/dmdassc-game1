@@ -7,6 +7,24 @@ Server = class {
 
   Update(dt) {
     for (var entity_id in this.entities) { this.entities[entity_id].Update(dt); }
+
+    for (var client_id in this.clients) {
+      var client = this.clients[client_id];
+
+      for (var entity_id in this.entities) {
+        var entity = this.entities[entity_id];
+
+        if(!client.entity_history[entity_id]) {
+          client.entity_history[entity_id] = {};
+        }
+
+        client.entity_history[entity_id].position = client.entity_history[entity_id].position || [];
+
+        client.entity_history[entity_id].position.push({t: Date.now() - client.lastUpdated, x: entity.position.x, y: entity.position.y});
+      }
+    }
+
+
   }
 
   HandleConnection(callback) {

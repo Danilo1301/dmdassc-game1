@@ -3,7 +3,9 @@ Entity = class {
     this.id = null;
     this.size = 100;
     this.position = {x: 0, y: 0};
+    this.target_position = {x: 0, y: 0};
     this.force = {x: 0, y: 0};
+    this.history = [];
   }
 
   CreateColision() {
@@ -17,6 +19,25 @@ Entity = class {
   }
 
   Update(dt) {
+
+    if(this.history.length > 0) {
+
+      var ct = Date.now() - this.lastUpdated;
+
+      for (var frame of this.history) {
+        if(ct >= frame.t) {
+          this.target_position.x = frame.x
+          this.target_position.y = frame.y;
+          this.history.splice(this.history.indexOf(frame), 1);
+        }
+      }
+
+      this.position.x = Math.lerp(this.position.x, this.target_position.x, 0.1);
+      this.position.y = Math.lerp(this.position.y, this.target_position.y, 0.1);
+    }
+
+
+
     var add = {x: this.force.x * dt, y: this.force.y * dt};
 
     this.position.x += add.x;

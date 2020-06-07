@@ -51,11 +51,12 @@ Client = class extends Engine {
 
     for (var entity_id in info.entities) {
       if(!server.entities[entity_id]) {
-        server.CreateEntity({id: entity_id, position: info.entities[entity_id].position, size: info.entities[entity_id].position.size});
+        server.CreateEntity({id: entity_id, position: {x: 0, y: 0}});
       }
       var entity = server.entities[entity_id];
-      entity.position.x = info.entities[entity_id].position.x;
-      entity.position.y = info.entities[entity_id].position.y;
+      entity.history = info.entities[entity_id].position;
+      entity.lastUpdated = Date.now();
+
 
 
     }

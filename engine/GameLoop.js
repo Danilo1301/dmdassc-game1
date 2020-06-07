@@ -22,7 +22,7 @@ GameLoop = class {
 
   Loop() {
     this.ProcessFPS();
-    
+
     this.tickFunction((Date.now() - (this.lastTick || Date.now())) / 60);
 
     this.lastTick = Date.now();
@@ -30,7 +30,7 @@ GameLoop = class {
     if(this.useAnimFrame) {
       window.requestAnimationFrame(this.Loop.bind(this));
     } else {
-      setTimeout(() => { this.Loop() }, 0);
+      setTimeout(() => { this.Loop() }, 10);
     }
   }
 }

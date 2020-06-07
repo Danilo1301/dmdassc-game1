@@ -11,7 +11,7 @@ Engine = class {
   Tick(dt) {
 
     for (var server_id in this.servers) { this.servers[server_id].Update(dt); }
-
+    
     this.Update();
     if(this.Render) { this.Render(); }
   }

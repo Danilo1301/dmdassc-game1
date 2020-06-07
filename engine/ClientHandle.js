@@ -3,6 +3,7 @@ ClientHandle = class {
     this.master = master;
     this.id = socket.id;
     this.socket = socket;
+    this.entity_history = {};
 
     socket.on("data", this.OnReceiveData.bind(this));
   }
@@ -13,24 +14,15 @@ ClientHandle = class {
     }
 
     if(data.id == "local_info") {
+
+
       console.log(data)
       setTimeout(() => {
-        callback({info: this.GetServerInfo()});
-      },350)
+        this.lastUpdated = Date.now();
+        callback({info: {entities: this.entity_history}});
+        this.entity_history = {};
+      }, Math.random()*120+120)
 
     }
-  }
-
-  GetServerInfo() {
-    var info = {entities: {}};
-
-    for (var entity_id in this.server.entities) {
-      info.entities[entity_id] = {
-        position: this.server.entities[entity_id].position,
-        size: this.server.entities[entity_id].size
-      }
-    }
-
-    return info;
   }
 }
