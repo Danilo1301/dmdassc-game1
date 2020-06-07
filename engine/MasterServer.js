@@ -19,9 +19,9 @@ MasterServer = class extends Engine {
 
     setInterval(() => {
       for (var e of es) {
-        e.ApplyForce(Math.random()*100-50, Math.random()*100-50);
+        e.ApplyForce(Math.random()*50-25, Math.random()*50-25);
       }
-    }, 2000)
+    }, 3000)
 
 
 
@@ -30,7 +30,7 @@ MasterServer = class extends Engine {
   OnConnection(socket) {
     var client = new ClientHandle(socket, this);
     this.clients[socket.id] = client;
-  
+
   }
 
   Update(dt) {

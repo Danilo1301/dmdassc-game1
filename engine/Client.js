@@ -58,7 +58,9 @@ Client = class extends Engine {
       }
       var entity = server.entities[entity_id];
       entity.history = info.entities[entity_id].position;
+      client.latency = Date.now() - client.lastUpdated;
       entity.lastUpdated = Date.now();
+
 
 
 
@@ -81,7 +83,7 @@ Client = class extends Engine {
 
     Render.ctx.textAlign = "left";
     Render.ctx.fillStyle = "black";
-    Render.FillText(`${this.gameLoop.fps} FPS ; ${(Date.now() - client.lastUpdated) || 0} ms`, 20, 30);
+    Render.FillText(`${this.gameLoop.fps} FPS ; ${(this.latency) || 0} ms`, 20, 30);
   }
 
   RenderServer() {
