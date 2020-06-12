@@ -7,10 +7,11 @@ Button = class {
 
     this.onClick_fn = null;
     this.selected = false;
-    this.isMouseOver = false;
+
+    Gui.buttons.push(this);
   }
 
-  onMouseState(state) {
+  OnMouseState(state) {
     if(state == MOUSE_STATE.DOWN && this.isMouseOver) { this.selected = true; }
 
     if(state == MOUSE_STATE.UP) {
@@ -19,25 +20,25 @@ Button = class {
     }
   }
 
-  onClick(fn) {
+  OnClick(fn) {
     this.onClick_fn = fn;
   }
 
-  update() {
-    this.isMouseOver = Utils.isPointInsideRect(Mouse.position, {x: this.position.x, y: this.position.y, width: this.width, height: this.height});
+  Update() {
+    this.isMouseOver = Utils.isPointInsideRect(Input.mouse.position, {x: this.position.x, y: this.position.y, width: this.width, height: this.height});
   }
 
-  draw() {
+  Draw() {
     if(this.isMouseOver) {
-      Render.setAttribute("fillStyle", this.selected ? "#626477" : "#7882E2");
+      Render.SetAttribute("fillStyle", this.selected ? "#626477" : "#7882E2");
     } else {
-      Render.setAttribute("fillStyle", "#ffffff");
+      Render.SetAttribute("fillStyle", "#8793FF");
     }
 
-    Render.fillRect(this.position.x, this.position.y, this.width, this.height);
+    Render.FillRect(this.position.x, this.position.y, this.width, this.height);
 
     Render.ctx.textAlign = "center";
     Render.ctx.fillStyle = "black";
-    Render.fillText(this.text, this.position.x + this.width/2, this.position.y + this.height/2+5)
+    Render.FillText(this.text, this.position.x + this.width/2, this.position.y + this.height/2+5)
   }
 }

@@ -1,39 +1,32 @@
-MasterServer = class extends Engine {
-  constructor(io) {
-    super();
-    this.clients = {};
+MasterServer = class {
+  static io = null;
+  static clients = {};
+  static servers = {};
 
-    this.StartGameLoop();
+  static start(io) {
+    this.io = io;
+    this.io.on("connection", this.onSocketConnect.bind(this));
 
-    io.on("connection", this.OnConnection.bind(this));
-
-    var server = this.CreateServer("server-1");
-
-    var es = [];
-
-    for (var i = 0; i < 20; i++) {
-      var e = server.CreateEntity({position: {x: Math.random()*100-50, y: Math.random()*100-50}});
-      es.push(e);
-    }
-
-
-    setInterval(() => {
-      for (var e of es) {
-        e.ApplyForce(Math.random()*50-25, Math.random()*50-25);
-      }
-    }, 3000)
-
-
-
+    var server = this.createServer("server-1");
   }
 
-  OnConnection(socket) {
-    var client = new ClientHandle(socket, this);
+  static createServer(server_id) {
+    this.servers[server_id] = new Server();
+  }
+
+  static onSocketConnect(socket) {
+    var client = new ClientHandle(socket);
+
     this.clients[socket.id] = client;
 
+    client.emit({id: "joined", client_id: client.id});
   }
 
-  Update(dt) {
-
+  static getServersList() {
+    var servers = {};
+    for (var server_id in this.servers) {
+      servers[server_id] = {players: 0};
+    }
+    return servers;
   }
 }

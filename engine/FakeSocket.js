@@ -1,0 +1,3 @@
+FakeSocket = class {
+  
+}

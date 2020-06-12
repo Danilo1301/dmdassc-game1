@@ -3,7 +3,7 @@
 
 start = function() {
 	//let includes = ["Engine", "GameLoop", "Client", "Render", "Input", "Server", "Entity", "ClientHandle", "Gui", "Button", "Collision"];
-  let includes = ["Utils", "Engine", "Client", "GameLoop", "Render", "Input", "Gui", "Button", "Server", "Entity", "Collision", "ClientHandle"];
+  let includes = ["Utils", "Engine", "Client", "MasterServer", "GameLoop", "DataRecorder", "Render", "Input", "Gui", "Button", "Server", "Entity", "PlayerEntity", "Collision", "ClientHandle"];
 
 	(function loadInclude(i) {
 		if(i > includes.length-1) { return init(); }
@@ -26,10 +26,10 @@ start = function() {
 
 
 let client;
-let server;
+let masterServer;
 
 init = function() {
+  masterServer = new MasterServer();
   client = new Client();
-  //engineClient = new Engine();
-  console.log(client)
+  console.log(masterServer)
 }

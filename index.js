@@ -4,19 +4,22 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookieParser = require('cookie-parser');
 
-var PORT = process.env.is_glitch ? 3000 : 7855;
-var IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
+const PORT = process.env.is_glitch ? 3000 : 7855;
+const IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
+const classes = {
+  main: ["Assets", "Engine", "Client", "Server", "Fade", "Gui", "Button", "Input", "Mouse", "Utils", "Net", "MasterServer", "ClientHandle"],
+  screens: ["ScreenMain", "ScreenLoading", "ScreenServersList"]
+};
 
 app.use(cookieParser());
 
-app.get('/', function(req, res) {
-  res.sendFile(`${__dirname}/game.html`);
-});
+app.get('/', function(req, res) { res.sendFile(`${__dirname}/game.html`); });
+
+app.get('/scripts', function(req, res) { res.json(classes); });
+
 
 app.get('*', function(req, res) {
-  if(req.originalUrl == "/js/index.js") {
-    return res.end(getIndexJS());
-  }
+  if(req.originalUrl == "/js/index.js") { return res.end(getIndexJS()); }
 
   if(req.originalUrl.startsWith("/engine/")) {
     return res.sendFile(`${__dirname}/${req.originalUrl.split("?")[0]}`);
@@ -31,18 +34,21 @@ http.listen(PORT, IP, function() {
 });
 
 function getIndexJS() {
-  return `$.getScript("/engine/index.js", ()=>{ start(); });`;
+  return `$.getScript("/engine/Game.js", ()=> { Game.start(); });`;
 }
 
 //----------------------
 
 
-for (var inc of ["Utils", "Engine", "MasterServer", "Client", "GameLoop", "Render", "Input", "Gui", "Button", "Server", "Entity", "Collision", "ClientHandle"]) {
+for (var inc of classes.main) {
   require(`./engine/${inc}`);
 }
 
-Utils.Load(this);
+Utils.load();
 
-var engine = new MasterServer(io);
+MasterServer.start(io);
 
-console.log(engine);
+
+
+
+//console.log(engine);

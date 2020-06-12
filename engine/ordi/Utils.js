@@ -7,7 +7,7 @@ Utils = class {
     return ((r1 + r2) ** 2 > (p1x - p2x) ** 2 + (p1y - p2y) ** 2);
   }
 
-  static avaliableId(object) {
+  static AvaliableId(object) {
     var id = 0;
     for (var k in object) {
       if(object[k].id != id) { break; }
@@ -16,7 +16,7 @@ Utils = class {
     return id;
   }
 
-  static checkRectColision(rect, test) {
+  static CheckRectColision(rect, test) {
     return test.x + test.width > rect.x &&
       test.y + test.height > rect.y &&
       rect.x + rect.width > test.x &&
@@ -29,15 +29,11 @@ Utils = class {
   }
 
 
-  static load() {
+  static Load() {
     Math.lerp = function (value1, value2, amount) {
     	amount = amount < 0 ? 0 : amount;
     	amount = amount > 1 ? 1 : amount;
     	return value1 + (value2 - value1) * amount;
-    };
-
-    Number.prototype.clamp = function(min, max) {
-      return Math.min(Math.max(this, min), max);
     };
   }
 }

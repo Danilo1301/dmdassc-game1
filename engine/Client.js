@@ -1,125 +1,88 @@
-Client = class extends Engine {
+Client = class {
   constructor() {
-    super();
-
-    this.StartGameLoop(true);
-    this.Load();
-    this.StartMenu();
+    this.onLoadingScreen = false;
+    this.onServersScreen = false;
+    this.serverList = {};
   }
 
-  Load() {
-    Utils.Load();
-    Render.Load();
-    Input.Load();
-  }
-
-  StartMenu() {
-    var button1 = new Button("Test server", 20, 80, 500, 80);
-    button1.OnClick(this.CreateSingleplayer.bind(this));
-
-    var button2 = new Button("Online", 20, 180, 500, 80);
-    button2.OnClick(() => { this.ConnectOnline(); });
-  }
-
-
-  ConnectOnline() {
-    console.log("online");
-    this.socket = io();
-    this.socket.emit("data", {id: "join_server", server_id: "server-1"});
-
-    this.socket.on("data", this.OnReceiveData.bind(this));
-  }
-
-  OnReceiveData(data) {
-    if(data.id == "joined") {
-      Gui.Hide();
-      var server = this.CreateServer("local");
-
-      this.SendLocalInfo();
-    }
-
-  }
-
-  SendLocalInfo() {
-    this.socket.emit("data", {id: "local_info", info: {mouse: this.recorded_mouse}}, (data) => {
-      this.ProcessServerInfo(data.info);
-      this.SendLocalInfo();
+  onFinishLoad() {
+    Gui.createButton("Singleplayer", Render.resolution.w/2 - 800/2, 300, 800, 60).onClick(() => {
+      console.log("Singleplayer");
     });
-    this.recorded_mouse = [];
-    this.lastUpdated = Date.now();
+
+    Gui.createButton("Multiplayer", Render.resolution.w/2 - 800/2, 400, 800, 60).onClick(() => {
+      console.log("Multiplayer");
+
+      Gui.destroyButtons();
+      Fade.in(500, () => {
+
+      });
+      this.onLoadingScreen = true;
+      Net.connect((info) => {
+        this.onLoadingScreen = false;
+        this.onServersScreen = true;
+        Net.getServersList();
+      });
+
+    });
+
+
+
+    Fade.in(500);
   }
 
-  ProcessServerInfo(info) {
-    var server = client.servers["local"];
+  update(delta) {
+    Gui.update(delta);
+    Fade.update(delta);
 
-    for (var entity_id in info.entities) {
-      if(!server.entities[entity_id]) {
-        server.CreateEntity({id: entity_id, position: {x: 0, y: 0}});
-      }
-      var entity = server.entities[entity_id];
-      entity.history = info.entities[entity_id].position;
-      client.latency = Date.now() - client.lastUpdated;
-      entity.lastUpdated = Date.now();
-
-
-
-
-    }
+    this.render();
   }
 
-  Update(dt) {
-    if(this.recorded_mouse != undefined) {
-      this.recorded_mouse.push({t: Date.now() - this.lastUpdated, x: Input.mouse.position.x - Render.resolution.w/2, y: Input.mouse.position.y - Render.resolution.h/2});
-    }
-    Gui.Update(dt);
+  render() {
+    Assets.processAssets();
+
+    Render.fillBackground(Assets.get("bg_main_menu_1"))
+
+    this.drawLoadingScreen();
+    this.drawServersScreen();
+
+    Gui.render();
+    Fade.render();
+    Game.drawFPS(10, 20);
+    Game.drawCursor();
+
+
+    //Render.ctx.globalAlpha = "0.2";
+    //Render.ctx.drawImage(Assets.get("bg_main_menu_1"), 0, 0);
+
   }
 
-  Render() {
-    if(!Render.loaded) { return; }
-    Render.Resize();
-    Render.FillBackground("white");
-    this.RenderServer();
-    Gui.Render();
+  drawLoadingScreen() {
+    if(!this.onLoadingScreen) { return }
+
+    Render.fillBackground("black")
 
     Render.ctx.textAlign = "left";
-    Render.ctx.fillStyle = "black";
-    Render.FillText(`${this.gameLoop.fps} FPS ; ${(this.latency) || 0} ms`, 20, 30);
+    Render.ctx.fillStyle = "white";
+    Render.fillText(`Connecting to server...`, 10, Render.resolution.h-30);
   }
 
-  RenderServer() {
-    var server = this.servers["local"];
+  drawServersScreen() {
+    if(!this.onServersScreen) { return }
 
-    if(!server) { return; }
+    Render.fillBackground(Assets.get("bg_servers_menu_1"));
 
-    Render.Translate(Render.resolution.w/2, Render.resolution.h/2);
-
-    for (var entity_id in server.entities) { server.entities[entity_id].Draw(); }
-
-    Render.Translate(-Render.resolution.w/2, -Render.resolution.h/2);
-  }
-
-  CreateSingleplayer() {
-    alert("Click on the button below pls :v")
-    return
-
-    Gui.Hide();
-    var server = this.CreateServer("local");
-
-
-    //server.HandleConnection(((info) => {
-    //  this.connectedToServer = info;
-    //}).bind(this));
-
-
-
-    var enitiyA = server.CreateEntity({position: {x: Math.random()*500-250, y: Math.random()*500-250}});
-    var enitiyB = server.CreateEntity({position: {x: Math.random()*500-250, y: Math.random()*500-250}});
-
-    enitiyA.ApplyForce(30, 0);
-    enitiyB.ApplyForce(-8, 0);
-
-    for (var i = 0; i < 20; i++) {
-      server.CreateEntity({position: {x: Math.random()*500-250, y: Math.random()*500-250}});
+    var i = 0;
+    for (var server_id in this.serverList) {
+      Render.ctx.fillStyle = "white";
+      Render.fillRect(77, 117 + (i*50), 870, 40)
+      Render.ctx.fillStyle = "black";
+      Render.fillText(`${server_id} | ${0} players`, 90, 117 + (i*50) + 25);
+      i++;
     }
+
+    //Render.ctx.textAlign = "left";
+    //Render.ctx.fillStyle = "white";
+    //Render.fillText(`Connecting to server...`, 10, Render.resolution.h-30);
   }
 }

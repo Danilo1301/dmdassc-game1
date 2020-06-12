@@ -1,23 +1,23 @@
 Render = class {
   static resolution = {w: 1024, h: 768};
-  static font = {
+
+  static loaded = false;
+
+  static Font = {
     size: 14,
     //name: "segoe-ui-black"
     name: "arial"
   }
 
-  static start() {
+  static Load() {
     this.scale = {x: 0, y: 0};
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
     this.area = document.getElementById("area");
-
-    var canvas = this.canvas;
-    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-    canvas.requestPointerLock()
+    this.loaded = true;
   }
 
-  static cropImage(image, x, y, width, height) {
+  static CropImage(image, x, y, width, height) {
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
 
@@ -28,26 +28,26 @@ Render = class {
     return canvas;
   }
 
-  static setAttribute(attr, value) {
+  static SetAttribute(attr, value) {
     this.ctx[attr] = value;
   }
 
-  static translate(x, y) {
+  static Translate(x, y) {
     this.ctx.translate(x * this.scale.x, y * this.scale.y);
   }
 
-  static drawImage(asset, x, y, w, h) {
+  static DrawImage(image, x, y, w, h) {
     this.ctx.imageSmoothingEnabled = false;
-    this.ctx.drawImage(asset.image, x * this.scale.x, y * this.scale.y, (w || image.width) * this.scale.x, (h || image.height) * this.scale.y);
+    this.ctx.drawImage(image, x * this.scale.x, y * this.scale.y, (w || image.width) * this.scale.x, (h || image.height) * this.scale.y);
   }
 
-  static fillText(text, x, y) {
-    this.ctx.font = (this.font.size * this.scale.x) + "pt " + this.font.name;
+  static FillText(text, x, y) {
+    this.ctx.font = (this.Font.size * this.scale.x) + "pt " + this.Font.name;
     this.ctx.fillText(text, x * this.scale.x, y * this.scale.y);
   }
 
-  static fillOutlineText(text, x, y, lineWidth) {
-    this.ctx.font = (this.font.size * this.scale.x) + "pt " + this.font.name;
+  static FillOutlineText(text, x, y, lineWidth) {
+    this.ctx.font = (this.Font.size * this.scale.x) + "pt " + this.Font.name;
 
     this.ctx.miterLimit = 2;
     this.ctx.lineJoin = 'round';
@@ -55,28 +55,26 @@ Render = class {
     this.ctx.lineWidth = (lineWidth * this.scale.x);
     this.ctx.strokeText(text, x * this.scale.x, y * this.scale.y);
     this.ctx.lineWidth = 1;
-    this.fillText(text, x, y);
+    this.FillText(text, x, y);
   }
 
-  static fillBackground(color) {
-    if(typeof color != "string") {
-      if(color instanceof Image || color instanceof AssetImage) { this.drawImage(color, 0, 0, this.resolution.w, this.resolution.h); }
-      return
-    }
-    this.setAttribute("fillStyle", color);
-    this.fillRect(0, 0, this.resolution.w, this.resolution.h);
+  static FillBackground(color) {
+    if(color instanceof Image) { return this.DrawImage(color, 0, 0, this.resolution.w, this.resolution.h); }
+    this.SetAttribute("fillStyle", color);
+    this.FillRect(0, 0, this.resolution.w, this.resolution.h);
 
   }
 
-  static fillRect(x, y, width, height) {
+  static FillRect(x, y, width, height) {
     this.ctx.fillRect(x * this.scale.x, y * this.scale.y, width * this.scale.x, height * this.scale.y);
   }
 
-  static clear() {
+  static Clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
-  static resize() {
+  static Resize() {
+
     var widthToHeight = this.resolution.w/this.resolution.h;
     var newWidth = window.innerWidth;
     var newHeight = window.innerHeight;
@@ -96,5 +94,11 @@ Render = class {
     this.scale.y = newHeight/this.resolution.h;
     this.width = this.canvas.width = newWidth;
     this.height = this.canvas.height = newHeight;
+  }
+
+  static Log(text) {
+    var args = [`[Render]`];
+    for (var a of arguments) { args.push(a); }
+    console.log.apply(null, args);
   }
 }
