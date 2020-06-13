@@ -4,6 +4,7 @@ Game = class {
 
   static loadResources(callback) {
     Assets.addImage("cursor.png", "cursor")
+    Assets.addImage("loading_1.png", "loading_1")
     Assets.addImage("test.png", "test")
     Assets.addImage("bg/main_menu_1.png", "bg_main_menu_1")
     Assets.addImage("bg/servers_menu_1.png", "bg_servers_menu_1")
@@ -66,7 +67,9 @@ Game = class {
       return;
     }
 
-    if(this.client) { this.client.update(delta); }
+    if(this.client) {
+      this.client.tick(delta);
+    }
   }
 }
 

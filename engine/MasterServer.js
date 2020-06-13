@@ -5,6 +5,7 @@ MasterServer = class {
 
   static start(io) {
     this.io = io;
+    if(!io) { this.io = FakeSocketServer }
     this.io.on("connection", this.onSocketConnect.bind(this));
 
     var server = this.createServer("server-1");

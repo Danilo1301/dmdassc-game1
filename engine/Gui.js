@@ -1,6 +1,13 @@
 Gui = class {
   static buttons = [];
+  static messageBoxes = [];
   static visible = true;
+
+  static createMessageBox(title, message) {
+    var msgbox = new MessageBox(title, message);
+    this.messageBoxes.push(msgbox);
+    return msgbox;
+  }
 
   static createButton(text, x, y, width, height) {
     var button = new Button(text, x, y, width, height);
@@ -17,11 +24,13 @@ Gui = class {
 
     if(!this.visible) { return }
     for (var button of this.buttons) { button.update(); }
+    for (var msgbox of this.messageBoxes) { msgbox.update(); }
   }
 
   static render() {
     if(!this.visible) { return }
     for (var button of this.buttons) { button.draw(); }
+    for (var msgbox of this.messageBoxes) { msgbox.draw(); }
   }
 
   static onMouseState(state) {

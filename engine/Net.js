@@ -5,7 +5,7 @@ Net = class {
   static connect(callback) {
     this.fn_onConnect = callback;
 
-    this.socket = io();
+    this.socket = Game.DEMO_SERVER ? FakeSocketClient.run() : io();
     this.socket.on("data", this.onData.bind(this));
   }
 
@@ -16,12 +16,5 @@ Net = class {
   static onData(data) {
     console.log(`data`, data);
     if(data.id == "joined") { this.fn_onConnect(data); }
-  }
-
-  static getServersList() {
-    this.emit({id: "servers_list"}, (servers) => {
-      Game.client.serverList = servers;
-      console.log("sservers", servers)
-    });
   }
 }

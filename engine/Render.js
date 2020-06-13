@@ -41,13 +41,17 @@ Render = class {
     this.ctx.drawImage(asset.image, x * this.scale.x, y * this.scale.y, (w || image.width) * this.scale.x, (h || image.height) * this.scale.y);
   }
 
-  static fillText(text, x, y) {
+  static updateFont() {
     this.ctx.font = (this.font.size * this.scale.x) + "pt " + this.font.name;
+  }
+
+  static fillText(text, x, y) {
+    this.updateFont();
     this.ctx.fillText(text, x * this.scale.x, y * this.scale.y);
   }
 
   static fillOutlineText(text, x, y, lineWidth) {
-    this.ctx.font = (this.font.size * this.scale.x) + "pt " + this.font.name;
+    this.updateFont();
 
     this.ctx.miterLimit = 2;
     this.ctx.lineJoin = 'round';

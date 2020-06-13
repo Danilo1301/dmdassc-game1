@@ -66,6 +66,7 @@ AssetImage = class {
     this.loaded = false;
 
     this.opacity = 1;
+    this.rotation = 25;
   }
 
   process() {
@@ -81,10 +82,8 @@ AssetImage = class {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalAlpha = this.opacity;
-
     ctx.drawImage(this.e, 0, 0);
 
     this.processed = true;
-    console.log(`${this.name} processed!`)
   }
 }
