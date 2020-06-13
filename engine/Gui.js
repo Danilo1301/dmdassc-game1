@@ -46,7 +46,6 @@ Gui = class {
     Mouse.isLocked = (document.pointerLockElement === Render.canvas || document.mozPointerLockElement === Render.canvas);
   }
 
-  static hide() {
-    this.visible = false;
-  }
+  static hide() { this.visible = false; }
+  static show() { this.visible = true; }
 }

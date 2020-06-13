@@ -10,9 +10,11 @@ const PORT = process.env.is_glitch ? 3000 : 7855;
 const IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
 const classes = {
   main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "GoogleApi", "Input", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "MasterServer", "ClientHandle"],
-  screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin"]
+  screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin", "ScreenGameRender"]
 };
 
+app.use(express.json());
+app.use(express.urlencoded());
 app.use(cookieParser());
 
 app.get('/', function(req, res) { res.sendFile(`${__dirname}/game.html`); });
@@ -38,4 +40,8 @@ for (var inc of classes.main) { require(`./engine/${inc}`); }
 
 Utils.load();
 
-//MasterServer.start(io);
+
+MasterServer.start(io);
+
+MasterServerAuth.load("959981766504-9m4sm16bkc2572ki2umr4r86rmvpecdu.apps.googleusercontent.com");
+app.post('/tokensignin', MasterServerAuth.httpSignIn);

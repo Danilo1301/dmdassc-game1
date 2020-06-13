@@ -1,5 +1,3 @@
-
-
 Client = class {
   constructor() {
     Game.DEMO_SERVER = true;

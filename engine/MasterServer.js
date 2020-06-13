@@ -4,6 +4,7 @@ MasterServer = class {
   static servers = {};
 
   static start(io) {
+
     this.io = io;
     if(!io) { this.io = FakeSocketServer }
     this.io.on("connection", this.onSocketConnect.bind(this));
@@ -29,5 +30,62 @@ MasterServer = class {
       servers[server_id] = {players: 0};
     }
     return servers;
+  }
+
+  static ConnectClientToServer(clientHandle, server_id, callback) {
+    this.servers[server_id].OnPlayerConnect(clientHandle, callback);
+  }
+}
+
+
+
+MasterServerAuth = class {
+  static CLIENT_ID = "";
+
+  static load(client_id) {
+    this.CLIENT_ID = client_id;
+
+    const {OAuth2Client} = require('google-auth-library');
+    this.client = new OAuth2Client(this.CLIENT_ID);
+
+
+  }
+
+  static async verify(token) {
+    const ticket = await this.client.verifyIdToken({
+        idToken: token,
+        audience: this.CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    //const userid = payload['sub'];
+
+    return payload;
+  }
+
+  static login(idtoken, callback) {
+    if(Game.DEMO_SERVER) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/tokensignin');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function() {
+        callback(xhr.responseText)
+      };
+      xhr.send('idtoken=' + idtoken);
+      return
+    }
+
+    this.verify(idtoken).then((payload) => {
+      callback(payload['sub']);
+    }).catch(() => {
+      callback("");
+    });
+  }
+
+  static httpSignIn(req, res) {
+    MasterServerAuth.verify(req.body.idtoken).then((payload) => {
+      res.end(payload['sub']);
+    }).catch(() => {
+      res.end("");
+    });
   }
 }

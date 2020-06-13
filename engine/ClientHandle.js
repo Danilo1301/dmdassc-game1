@@ -6,6 +6,7 @@ ClientHandle = class {
 
     this.socket = socket;
     this.id = socket.id;
+    this.uid = null;
   }
 
   emit(data) {
@@ -13,8 +14,22 @@ ClientHandle = class {
   }
 
   onData(data, callback) {
+    var self = this;
+
     if(data.id == "servers_list") {
       callback(MasterServer.getServersList());
+    }
+
+    if(data.id == "login") {
+      MasterServerAuth.login(data.id_token, (uid) => {
+        self.uid = uid;
+        callback(uid);
+        console.log(self)
+      });
+    }
+
+    if(data.id == "join_server") {
+      MasterServer.ConnectClientToServer(this, data.server_id, callback);
     }
   }
 }
