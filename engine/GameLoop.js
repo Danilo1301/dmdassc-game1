@@ -2,6 +2,7 @@ GameLoop = class {
   constructor() {
     this.onTick = null;
     this.useInterval = false;
+    this.intervalDelay = 0;
 
     this.fps = 0;
 
@@ -9,6 +10,8 @@ GameLoop = class {
     this.lastFpsCheckTime = Date.now();
 
     try { window; } catch (e) { this.useInterval = true;}
+
+    //this.useInterval = false;
   }
 
   start() {
@@ -25,7 +28,7 @@ GameLoop = class {
   }
 
   loop() {
-    var delta = Date.now() - (this.lastTick || Date.now());
+    var delta = (Date.now() - (this.lastTick || Date.now()))/60;
 
     this.updateFPS();
 
@@ -33,7 +36,7 @@ GameLoop = class {
 
     if(this.onTick != null) { this.onTick(delta); }
 
-    if(this.useInterval) { return setTimeout(() => { this.loop() }, 0);}
+    if(this.useInterval) { return setTimeout(() => { this.loop() }, this.intervalDelay);}
     window.requestAnimationFrame(this.loop.bind(this));
   }
 }

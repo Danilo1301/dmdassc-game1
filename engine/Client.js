@@ -9,6 +9,7 @@ Client = class {
   }
 
   tick(delta) {
+    if(Game.server) { Game.server.update(delta); }
     Screens.update(delta);
 
     this.update(delta);

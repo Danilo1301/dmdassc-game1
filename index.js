@@ -9,7 +9,7 @@ process.env.is_glitch = true;
 const PORT = process.env.is_glitch ? 3000 : 7855;
 const IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
 const classes = {
-  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "GoogleApi", "Input", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "MasterServer", "ClientHandle"],
+  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "GoogleApi", "Input", "MapGrid", "Entity", "Camera", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "Collision", "MasterServer", "ClientHandle"],
   screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin", "ScreenGameRender"]
 };
 

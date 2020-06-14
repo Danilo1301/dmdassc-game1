@@ -7,7 +7,7 @@ Utils = class {
     return ((r1 + r2) ** 2 > (p1x - p2x) ** 2 + (p1y - p2y) ** 2);
   }
 
-  static avaliableId(object) {
+  static getAvaliableId(object) {
     var id = 0;
     for (var k in object) {
       if(object[k].id != id) { break; }

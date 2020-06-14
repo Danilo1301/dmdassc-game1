@@ -1,3 +1,6 @@
+DEV_RENDER_CLIENT_VIEW = true;
+
+
 ScreenServersList = class extends Screen {
   static servers_list = {};
   static buttons = {};
@@ -7,6 +10,7 @@ ScreenServersList = class extends Screen {
     this.getServersList(() => {
       console.log("got", this.servers_list)
     });
+    //this.joinServer("server-1")
   }
 
   static getServersList(callback) {
@@ -31,9 +35,18 @@ ScreenServersList = class extends Screen {
     Gui.hide();
     Screens.setCurrentScreen(ScreenLoading);
 
-    Net.emit({id: "join_server", server_id: server_id}, (huh) => {
+    Net.emit({id: "join_server", server_id: server_id}, (info) => {
+      Game.server = new Server();
       Screens.setCurrentScreen(ScreenGameRender);
-      console.log("huh", huh)
+      Game.serverInfo = info;
+
+      Gui.show();
+
+
+      Gui.createButton("Change view", 50, 50, 200, 30).onClick(() => {
+        DEV_RENDER_CLIENT_VIEW = !DEV_RENDER_CLIENT_VIEW;
+      });
+
     });
   }
 

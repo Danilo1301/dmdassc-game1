@@ -29,7 +29,7 @@ ClientHandle = class {
     }
 
     if(data.id == "join_server") {
-      MasterServer.ConnectClientToServer(this, data.server_id, callback);
+      MasterServer.connectClientToServer(this, data.server_id, callback);
     }
   }
 }

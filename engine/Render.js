@@ -5,6 +5,7 @@ Render = class {
     //name: "segoe-ui-black"
     name: "arial"
   }
+  static imageSmoothingEnabled = true;
 
   static start() {
     this.scale = {x: 0, y: 0};
@@ -37,7 +38,7 @@ Render = class {
   }
 
   static drawImage(asset, x, y, w, h) {
-    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.imageSmoothingEnabled = this.imageSmoothingEnabled;
     this.ctx.drawImage(asset.image, x * this.scale.x, y * this.scale.y, (w || image.width) * this.scale.x, (h || image.height) * this.scale.y);
   }
 

@@ -32,8 +32,8 @@ MasterServer = class {
     return servers;
   }
 
-  static ConnectClientToServer(clientHandle, server_id, callback) {
-    this.servers[server_id].OnPlayerConnect(clientHandle, callback);
+  static connectClientToServer(clientHandle, server_id, callback) {
+    this.servers[server_id].onPlayerConnect(clientHandle, callback);
   }
 }
 
