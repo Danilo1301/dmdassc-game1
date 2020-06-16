@@ -14,59 +14,54 @@ Assets = class {
     return this.allAssets[name];
   }
 
-  static addImage(src, name) {
-    this.loadQuery.push(new AssetImage(src, name));
-    return this;
-  }
+  static add(src, name, type) {
+    var asset;
 
-  static addAudio(src, name) {
-    return this;
-  }
+    if(type == Image) {
+      asset = new AssetImage(src, name);
+    } else if(type == Audio) {
+      asset = new AssetAudio(src, name);
+    }
 
-  static onProgress(fn) {
-    this.fn_onProgress = fn;
-    return this;
-  }
-
-  static load(callback) {
-    console.log(this.loadQuery);
-
-    (function loadAsset(i) {
-      if(i > Assets.loadQuery.length-1) { return callback(); }
-      var item = Assets.loadQuery[i];
-
-      item.e.src = "/img/" + item.src;
-      //item.e.src = "/img/" + item.src;
-
-      var onload = function() {
-        Assets.fn_onProgress({name: item.name});
-        Assets.allAssets[item.name] = item;
-        item.loaded = true;
-        loadAsset.bind(this, i+1)();
-      }
-
-      if(item.e instanceof Audio) {
-        item.e.oncanplaythrough = onload.bind(this);
-      } else {
-        item.e.onload = onload.bind(this);
-      }
-
-    })(0);
+    return asset;
   }
 }
 
-AssetImage = class {
+AssetBase = class {
   constructor(src, name) {
-    this.image = document.createElement('canvas');
-
-    this.e = new Image;
     this.name = name;
     this.src = src;
     this.processed = false;
     this.loaded = false;
+  }
 
-    this.opacity = 1;
-    this.rotation = 25;
+  load() {
+    var self = this;
+    return new Promise(function(resolve) {
+      self.e.src = self.path + self.src;
+
+      var onload = function() {
+        Assets.allAssets[self.name] = self;
+        self.loaded = true;
+        resolve();
+      }
+
+      if(self.e instanceof Audio) {
+        self.e.oncanplaythrough = onload.bind(this);
+      } else {
+        self.e.onload = onload.bind(this);
+      }
+    });
+  }
+}
+
+AssetImage = class extends AssetBase {
+  constructor(src, name) {
+    super(src, name);
+
+    this.image = document.createElement('canvas');
+    this.e = new Image;
+    this.path = "/img/";
   }
 
   process() {
@@ -85,5 +80,14 @@ AssetImage = class {
     ctx.drawImage(this.e, 0, 0);
 
     this.processed = true;
+  }
+}
+
+AssetAudio = class extends AssetBase {
+  constructor(src, name) {
+    super(src, name);
+
+    this.e = new Audio;
+    this.path = "/audio/";
   }
 }

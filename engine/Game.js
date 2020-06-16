@@ -2,47 +2,18 @@ Game = class {
   static gameLoop = null;
   static client = null;
 
-  static loadResources(callback) {
-    Assets.addImage("cursor.png", "cursor")
-    Assets.addImage("loading_1.png", "loading_1")
-    Assets.addImage("test.png", "test")
-    Assets.addImage("bg/main_menu_1.png", "bg_main_menu_1")
-    Assets.addImage("bg/servers_menu_1.png", "bg_servers_menu_1")
+  static getAssets() {
+    return {
+      images: [
+        ["cursor", "cursor.png"],
+        ["loading_1", "loading_1.png"],
+        ["test", "test.png"],
+        ["bg_main_menu_1", "bg/main_menu_1.png"],
+        ["bg_servers_menu_1", "bg/servers_menu_1.png"]
+      ], audios: [
 
-    Preload.progress.total = Assets.loadQuery.length;
-    Preload.progress.current = Assets.loadQuery.length/2;
-    Assets.onProgress((info) => {
-      Preload.progress.current += 0.5;
-      Preload.loadtext = `Loading ${info.name}...`
-    }).load(callback);
-  }
-
-  static start() {
-    Preload.loadScripts(["Render", "GameLoop"], () => {
-      Render.start();
-
-      this.gameLoop = new GameLoop();
-      this.gameLoop.onTick = this.tick.bind(this);
-      this.gameLoop.start();
-
-      Preload.load(() => {
-
-        this.loadResources(() => {
-          Preload.loadtext = "Loaded!";
-          setTimeout(() => {
-            Preload.loading = false;
-
-            Utils.load();
-            Input.load();
-            Mouse.load();
-
-            this.client = new Client();
-            this.client.onFinishLoad();
-          }, 500)
-
-        });
-      });
-    });
+      ]
+    }
   }
 
   static drawFPS(x, y) {
@@ -56,79 +27,169 @@ Game = class {
     Render.drawImage(Assets.get("cursor"), Mouse.position.x, Mouse.position.y, 20, 20*1.3)
   }
 
+  static start() {
+    Preload.loadMultipleFiles(["Render", "GameLoop"], () => {
+      Render.start();
+
+      this.gameLoop = new GameLoop();
+      this.gameLoop.onTick = this.tick.bind(this);
+      this.gameLoop.start();
+
+      var load_classes = Preload.new();
+      var load_screens = Preload.new();
+      var load_images = Preload.new();
+
+      load_classes.setLoadMethod( (a, b) => { return new Promise(function(resolve) { Preload.loadFile(a).then(() => { resolve(); }); }); });
+      load_screens.setLoadMethod( (a, b) => { return new Promise(function(resolve) { Preload.loadFile("/screens/"+a).then(() => { resolve(); }); }); });
+
+      var assetsLoaded = false;
+
+      var onProgress = function() {
+        if(!assetsLoaded) {
+          try {
+            load_images.setLoadMethod( (a, b, c) => {
+              return new Promise(function(resolve) {
+                var asset = Assets.add(b, a, c);
+                asset.load().then(() => { resolve() })
+              });
+            });
+            assetsLoaded = true;
+          } catch (e) {
+
+          }
+        }
+      }
+
+      fetch("scripts").then(response => response.json()).then(data => {
+
+        for (var c of data.main) { load_classes.add(c); }
+        for (var c of data.screens) { load_screens.add(c); }
+
+        var assets = this.getAssets();
+
+        for (var e of assets.images) { load_images.add(e[0], e[1], Image); }
+        for (var e of assets.audios) { load_images.add(e[0], e[1], Audio); }
+
+        //load_images.add("cursor", "cursor.png", Image);
+        ////load_images.add("lol", "lol.mp3", Audio);
+
+        Preload.load(onProgress, () => {
+          Utils.load();
+          Input.load();
+          Mouse.load();
+
+          this.client = new Client();
+          this.client.onFinishLoad();
+        });
+      });
+    })
+  }
+
   static tick(delta) {
     Render.resize();
 
-    if(Preload.loading) {
+    if(!this.client) {
       Render.fillBackground("black");
       Render.ctx.fillStyle = "white";
-      Render.fillText(Preload.loadtext, 5, Render.resolution.h-55);
-      Render.fillRect(0, Render.resolution.h-40, (Preload.progress.current / Preload.progress.total)*Render.resolution.w, 30);
-      return;
+      Render.fillText(`${Preload.progress.current_loading[0]}`, 5, Render.resolution.h-55);
+      Render.fillRect(0, Render.resolution.h-40, (Preload.progress.total_progress[0] / Preload.progress.total_progress[1])*Render.resolution.w, 30);
+      return
     }
 
-    if(this.client) {
-      this.client.tick(delta);
-    }
+    this.client.tick(delta);
   }
 }
 
 Preload = class {
-  static currentLoadingScript = null;
-  static scriptsLoaded = [];
-  static totalScripts = [];
-  static loading = false;
-  static assetsLoaded = false;
-  static loadtext = "";
+  static loads = [];
+  static progress = {
+    current_loading: [],
+    loaders: [0, 0],
+    total_progress: [0, 0]
+  }
+  static fn_onProgress = null;
+  static fn_onEnd = null;
 
-  static progress = {current: 0, total: 0}
+  static load(fn, fn_end) {
+    this.progress.loaders = [0, this.loads.length];
+    this.fn_onProgress = fn;
+    this.fn_onEnd = fn_end;
+    this.progress.total_progress = [0, 0];
+    for (var l of this.loads) {
+      this.progress.total_progress[1] += l.items.length;
+    }
 
-  static load(callback) {
-    var self = this;
+    this.loadStep();
+  }
 
+  static loadStep(fn) {
 
+    if(this.loads.length == 0) {
+      return this.fn_onEnd();
+    }
 
-    this.getScripts((all_scripts) => {
-      var scripts = [];
-      for (var s of all_scripts.main) {
-        scripts.push(s);
-      }
+    var load = this.loads[0];
 
+    if(load.items.length == 0) {
+      this.loads.splice(0, 1);
+      this.progress.loaders[0]++;
+      return this.loadStep();
+    }
 
-      for (var s of all_scripts.screens) {
-        scripts.push("screens/"+s);
-      }
+    Preload.progress.current_loading = load.items[0];
 
-      console.log(scripts)
+    this.fn_onProgress();
 
-      self.totalScripts = scripts;
-      this.loading = true;
-
-
-
-      self.progress.total = scripts.length;
-
-      (function loadInclude(i) {
-    		if(i > scripts.length-1) { return callback(); }
-        self.currentLoadingScript = scripts[i];
-
-        self.loadScript(scripts[i]).then(() => {
-          self.scriptsLoaded.push(scripts[i]);
-          self.progress.current += 0.5;
-          self.loadtext = `Loading ${Preload.currentLoadingScript}...`
-          loadInclude.bind(this, i+1)();
-        });
-      })(0);
+    load.load(() => {
+      this.progress.total_progress[0]++;
+      this.fn_onProgress();
+      this.loadStep();
     });
   }
 
-  static getScripts(callback) { fetch("scripts").then(response => response.json()).then(data => { callback(data); }); }
+  static new() {
+    var load = new this.Load();
+    this.loads.push(load);
+    return load;
+  }
 
-  static loadScripts(scripts, callback) {
+  static loadFile(file) { return new Promise(function(resolve) { $.getScript("/engine/"+file+".js", function() { resolve(); }); }); }
+
+  static loadMultipleFiles(files, callback) {
     var promises = [];
-    for (var s of scripts) { promises.push(this.loadScript(s)); }
+    for (var f of files) { promises.push(this.loadFile(f)); }
     Promise.all(promises).then(() => { callback(); })
   }
 
-  static loadScript(text) { return new Promise(function(resolve) { $.getScript("/engine/"+text+".js", function() { resolve(); }); }); }
+}
+
+Preload.Load = class {
+  constructor() {
+    this.loadMethod = null;
+    this.items = [];
+  }
+
+  setLoadMethod(fn) {
+    this.loadMethod = fn;
+  }
+
+  add() {
+    var args = [];
+    for (var a of arguments) {
+      args.push(a);
+    }
+
+    this.items.push(args);
+  }
+
+  load(callback) {
+    if(this.items.length == 0) { return console.log("Finished"); }
+
+    var item = this.items[0];
+
+    this.loadMethod.apply(null, item).then(e => {
+      this.items.splice(0, 1)
+      callback();
+    });
+  }
 }

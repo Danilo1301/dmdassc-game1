@@ -32,7 +32,7 @@ ScreenServersList = class extends Screen {
   }
 
   static joinServer(server_id) {
-    Gui.hide();
+    Gui.destroyButtons();
     Screens.setCurrentScreen(ScreenLoading);
 
     Net.emit({id: "join_server", server_id: server_id}, (info) => {
@@ -40,8 +40,7 @@ ScreenServersList = class extends Screen {
       Screens.setCurrentScreen(ScreenGameRender);
       Game.serverInfo = info;
 
-      Gui.show();
-
+  
 
       Gui.createButton("Change view", 50, 50, 200, 30).onClick(() => {
         DEV_RENDER_CLIENT_VIEW = !DEV_RENDER_CLIENT_VIEW;
