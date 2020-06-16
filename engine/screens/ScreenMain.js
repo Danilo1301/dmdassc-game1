@@ -23,6 +23,10 @@ ScreenMain = class extends Screen {
     Game.server.onPlayerConnect(null, (a) => {
       console.log(a)
     });
+
+    Gui.createButton("Set camera to follow", 50, 50, 200, 30).onClick(() => {
+      Camera.followEntity(Camera.entity_following == null ? ScreenGameRender.player : null)
+    });
   }
 
   static joinMultiplayer() {

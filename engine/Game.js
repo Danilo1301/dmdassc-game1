@@ -91,7 +91,7 @@ Game = class {
     if(!this.client) {
       Render.fillBackground("black");
       Render.ctx.fillStyle = "white";
-      Render.fillText(`${Preload.progress.current_loading[0]}`, 5, Render.resolution.h-55);
+      Render.fillText(`Loading ${Preload.progress.current_loading[0]}`, 5, Render.resolution.h-55);
       Render.fillRect(0, Render.resolution.h-40, (Preload.progress.total_progress[0] / Preload.progress.total_progress[1])*Render.resolution.w, 30);
       return
     }
