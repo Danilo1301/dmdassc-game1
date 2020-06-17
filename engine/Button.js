@@ -11,7 +11,9 @@ Button = class {
   }
 
   onMouseState(state) {
-    if(state == MOUSE_STATE.DOWN && this.isMouseOver) { this.selected = true; }
+    if(state == MOUSE_STATE.DOWN && this.isMouseOver) {
+      this.selected = true;
+    }
 
     if(state == MOUSE_STATE.UP) {
       if(this.selected && this.onClick_fn && this.isMouseOver) { this.onClick_fn(); }

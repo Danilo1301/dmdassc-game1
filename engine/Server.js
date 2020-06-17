@@ -1,6 +1,7 @@
 Server = class {
   constructor() {
     this.entities = {};
+    this.blocks = {};
   }
 
   update(delta) {
@@ -13,17 +14,34 @@ Server = class {
     var entity = this.createEntity(EntityPlayer);
 
     if(clientHandle == null) {
-      //Game.entity_player = entity;
-      ScreenGameRender.player = entity;
+      World.player = entity;
     } else {
       console.log(`${clientHandle.uid} connected to server`)
     }
 
-
-
-    console.log(entity)
-
     callback({player_entity_id: entity.id});
+  }
+
+  createDefaultWorld() {
+    for (var i = 0; i < 10; i++) {
+      this.createEntity(EntityMob);
+    }
+
+    for (var x = -20; x < 5; x++) {
+      for (var y = -5; y < 5; y++) {
+        this.createBlock(x, y, 0);
+      }
+    }
+
+  }
+
+  createBlock(x, y, id) {
+
+    var block = new Block();
+    block.id = `${x}:${y}`;
+
+    this.blocks[block.id] = block;
+    return block;
   }
 
   createEntity(type) {

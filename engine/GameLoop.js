@@ -1,42 +1,65 @@
 GameLoop = class {
   constructor() {
-    this.onTick = null;
-    this.useInterval = false;
-    this.intervalDelay = 0;
+    this.lastTick;
+    this.frameRate = 80;
+    this.timeElapsed = 0;
 
+    this.lastFPSCheck = Date.now();
     this.fps = 0;
-
     this.frames = 0;
-    this.lastFpsCheckTime = Date.now();
+    this.fn_tick = null;
 
+    this.useInterval = false;
     try { window; } catch (e) { this.useInterval = true;}
-
-    //this.useInterval = false;
   }
 
   start() {
-    this.loop();
+    this.tick();
   }
 
-  updateFPS() {
-    if(Date.now() - this.lastFpsCheckTime > 1000) {
-      this.lastFpsCheckTime = Date.now();
-      this.fps = this._frames;
-      this._frames = 0;
+  onTick(fn_tick) {
+    this.fn_tick = fn_tick;
+  }
+
+  calculateFPS() {
+    if(Date.now() - this.lastFPSCheck >= 1000) {
+      this.lastFPSCheck = Date.now();
+      this.fps = this.frames;
+      this.frames = 0;
     }
-    this._frames++;
   }
 
-  loop() {
-    var delta = (Date.now() - (this.lastTick || Date.now()))/60;
+  call_onTick(dt) {
+    this.calculateFPS();
+    this.frames += 1;
+    if(this.fn_tick) {
+      this.fn_tick(dt/1000);
+    }
+  }
 
-    this.updateFPS();
+  tick(current) {
+    var elapsed = (current - this.lastTick) || 0;
 
-    this.lastTick = Date.now();
+    this.lastTick = current;
 
-    if(this.onTick != null) { this.onTick(delta); }
+    this.timeElapsed += elapsed;
 
-    if(this.useInterval) { return setTimeout(() => { this.loop() }, this.intervalDelay);}
-    window.requestAnimationFrame(this.loop.bind(this));
+
+    var interval = (1000/this.frameRate) || elapsed;
+
+    if(interval == Infinity) {
+      interval = elapsed
+    }
+
+    if(this.timeElapsed >= interval) {
+      this.call_onTick(interval);
+      this.timeElapsed = this.timeElapsed%interval;
+    }
+
+    if(this.useInterval) {
+      setTimeout(() => { this.tick(); }, 0)
+    } else {
+      window.requestAnimationFrame(this.tick.bind(this))
+    }
   }
 }

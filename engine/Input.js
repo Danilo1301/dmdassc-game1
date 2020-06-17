@@ -1,13 +1,16 @@
+KEY_STATE = {UP: 0, DOWN: 1};
+
 Input = class {
   static keys = {};
+  static events = [];
 
   static load() {
     window.addEventListener("keydown", e => {
-      this.keys[e.keyCode] = true;
+      this.events.push({state: KEY_STATE.DOWN, keyCode: e.keyCode});
     });
 
     window.addEventListener("keyup", e => {
-      delete this.keys[e.keyCode];
+      this.events.push({state: KEY_STATE.UP, keyCode: e.keyCode});
     });
   }
 

@@ -22,7 +22,7 @@ Fade = class {
   static update(delta) {
     if(this.current == null) { return }
 
-    this.current += (this.mode == 0 ? 1 : -1) * (delta*60)/this.time;
+    this.current += (this.mode == 0 ? 1 : -1) * delta * (1000/this.time);
 
     if(this.mode == 0 && this.current > 1) { return this.end(); }
     if(this.mode == 1 && this.current < 0) { return this.end(); }

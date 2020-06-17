@@ -9,7 +9,7 @@ process.env.is_glitch = true;
 const PORT = process.env.is_glitch ? 3000 : 7855;
 const IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
 const classes = {
-  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "GoogleApi", "Input", "MapGrid", "Entity", "Camera", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "Collision", "MasterServer", "ClientHandle"],
+  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "World", "Block", "GoogleApi", "Input", "MapGrid", "Entity", "Camera", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "Collision", "MasterServer", "ClientHandle"],
   screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin", "ScreenGameRender"]
 };
 
@@ -35,7 +35,7 @@ function getIndexJS() { return `$.getScript("/engine/Game.js", ()=> { Game.start
 
 //----------------------
 
-
+require(`./engine/GameLoop.js`);
 for (var inc of classes.main) { require(`./engine/${inc}`); }
 
 Utils.load();

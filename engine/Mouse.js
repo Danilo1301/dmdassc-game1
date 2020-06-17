@@ -5,6 +5,39 @@ Mouse = class {
   static isDown = false;
   static isLocked = false;
 
+  static events = [];
+
+  static load() {
+    window.addEventListener("mousemove", e => {
+      var rect = Render.canvas.getBoundingClientRect();
+
+      if(this.isLocked) {
+        this.position.x += e.movementX;
+        this.position.y += e.movementY;
+      } else {
+        this.position.x = (e.clientX - rect.left) / Render.scale.x,
+        this.position.y = (e.clientY - rect.top) / Render.scale.y
+      }
+
+      this.position.x = this.position.x.clamp(0, Render.resolution.w);
+      this.position.y = this.position.y.clamp(0, Render.resolution.h);
+    });
+
+    window.addEventListener("mouseup", e => {
+      this.events.push({state: MOUSE_STATE.UP});
+    });
+
+    window.addEventListener("mousedown", e => {
+      this.events.push({state: MOUSE_STATE.DOWN});
+    });
+  }
+}
+
+Mooouse = class {
+  static position = {x: 0, y: 0};
+  static isDown = false;
+  static isLocked = false;
+
   static load() {
     window.addEventListener("mousemove", e => {
       var rect = Render.canvas.getBoundingClientRect();

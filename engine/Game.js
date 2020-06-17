@@ -7,7 +7,7 @@ Game = class {
       images: [
         ["cursor", "cursor.png"],
         ["loading_1", "loading_1.png"],
-        ["test", "test.png"],
+        ["player", "player.png"],
         ["bg_main_menu_1", "bg/main_menu_1.png"],
         ["bg_servers_menu_1", "bg/servers_menu_1.png"]
       ], audios: [
@@ -28,11 +28,12 @@ Game = class {
   }
 
   static start() {
+
     Preload.loadMultipleFiles(["Render", "GameLoop"], () => {
       Render.start();
 
       this.gameLoop = new GameLoop();
-      this.gameLoop.onTick = this.tick.bind(this);
+      this.gameLoop.onTick(this.tick.bind(this));
       this.gameLoop.start();
 
       var load_classes = Preload.new();

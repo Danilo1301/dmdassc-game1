@@ -39,7 +39,7 @@ Render = class {
 
   static drawImage(asset, x, y, w, h) {
     this.ctx.imageSmoothingEnabled = this.imageSmoothingEnabled;
-    this.ctx.drawImage(asset.image, x * this.scale.x, y * this.scale.y, (w || image.width) * this.scale.x, (h || image.height) * this.scale.y);
+    this.ctx.drawImage(asset.image, x * this.scale.x, y * this.scale.y, (w || asset.image.width) * this.scale.x, (h || asset.image.height) * this.scale.y);
   }
 
   static updateFont() {

@@ -2,8 +2,15 @@ MasterServer = class {
   static io = null;
   static clients = {};
   static servers = {};
+  static gameLoop = null;
 
   static start(io) {
+    this.gameLoop = new GameLoop();
+    this.gameLoop.onTick(this.tick.bind(this));
+    this.gameLoop.frameRate = 60;
+    this.gameLoop.start();
+
+
 
     this.io = io;
     if(!io) { this.io = FakeSocketServer }
@@ -12,8 +19,17 @@ MasterServer = class {
     var server = this.createServer("server-1");
   }
 
+  static tick(delta) {
+    for (var server_id in this.servers) {
+      this.servers[server_id].update(delta);
+    }
+  }
+
   static createServer(server_id) {
-    this.servers[server_id] = new Server();
+    var server = new Server();
+    server.createDefaultWorld();
+    this.servers[server_id] = server;
+    return server;
   }
 
   static onSocketConnect(socket) {

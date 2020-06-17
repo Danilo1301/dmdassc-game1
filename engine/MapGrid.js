@@ -98,7 +98,7 @@ MapGrid = class {
   }
 
   static render() {
-    Render.fillBackground("black");
+    //Render.fillBackground("black");
 
     Render.translate(Render.resolution.w/2, Render.resolution.h/2);
 
@@ -108,7 +108,7 @@ MapGrid = class {
       var x = block.position.x;
       var y = block.position.y;
 
-      Render.ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+      Render.ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
       Render.fillRect(x, y, this.blockSize, this.blockSize);
       Render.ctx.fillStyle = "black";
       Render.fillText(`${block.tile.x}, ${block.tile.y}`, x+20, y+20);

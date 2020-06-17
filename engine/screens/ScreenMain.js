@@ -18,14 +18,15 @@ ScreenMain = class extends Screen {
     Gui.destroyButtons();
     Screens.setCurrentScreen(ScreenGameRender);
 
-    Game.server = new Server();
-    Game.server.createEntity(EntityMob);
-    Game.server.onPlayerConnect(null, (a) => {
+    World.server = new Server();
+    World.server.createDefaultWorld();
+    
+    World.server.onPlayerConnect(null, (a) => {
       console.log(a)
     });
 
     Gui.createButton("Set camera to follow", 50, 50, 200, 30).onClick(() => {
-      Camera.followEntity(Camera.entity_following == null ? ScreenGameRender.player : null)
+      Camera.followEntity(Camera.entity_following == null ? World.player : null)
     });
   }
 
