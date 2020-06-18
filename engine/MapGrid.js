@@ -94,13 +94,18 @@ MapGrid = class {
 
       block.position.x = block.initial_position.x + this.position.x;
       block.position.y = block.initial_position.y + this.position.y;
+
+      block.chunk = {x: Math.ceil((block.tile.x-10)/21), y: Math.ceil((block.tile.y-10)/21)}
     }
   }
 
   static render() {
     //Render.fillBackground("black");
 
+
+
     Render.translate(Render.resolution.w/2, Render.resolution.h/2);
+
 
     for (var block_key in this.blocks) {
       var block = this.blocks[block_key];
@@ -111,10 +116,14 @@ MapGrid = class {
       Render.ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
       Render.fillRect(x, y, this.blockSize, this.blockSize);
       Render.ctx.fillStyle = "black";
-      Render.fillText(`${block.tile.x}, ${block.tile.y}`, x+20, y+20);
+      Render.fillText(`${block.chunk.x}, ${block.chunk.y}`, x+20, y+20);
       Render.fillText(`calaio`, x+20, y+40);
     }
 
+
+
     Render.translate(-Render.resolution.w/2, -Render.resolution.h/2);
+
+
   }
 }

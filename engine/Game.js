@@ -8,6 +8,7 @@ Game = class {
         ["cursor", "cursor.png"],
         ["loading_1", "loading_1.png"],
         ["player", "player.png"],
+        ["npc", "npc.png"],
         ["bg_main_menu_1", "bg/main_menu_1.png"],
         ["bg_servers_menu_1", "bg/servers_menu_1.png"]
       ], audios: [
@@ -27,6 +28,24 @@ Game = class {
     Render.drawImage(Assets.get("cursor"), Mouse.position.x, Mouse.position.y, 20, 20*1.3)
   }
 
+  static loadBlock(id) {
+    return new Promise(function(resolve) {
+      console.log(id)
+
+      var asset = Assets.add("block.png", "block_"+id, Image);
+
+      asset.path = `engine/assets/blocks/${id}/`;
+
+      asset.load().then(() => {
+        resolve();
+      });
+
+      setTimeout(() => {
+        //resolve();
+      }, 500);
+    });
+  }
+
   static start() {
 
     Preload.loadMultipleFiles(["Render", "GameLoop"], () => {
@@ -39,6 +58,7 @@ Game = class {
       var load_classes = Preload.new();
       var load_screens = Preload.new();
       var load_images = Preload.new();
+      var load_blocks = Preload.new();
 
       load_classes.setLoadMethod( (a, b) => { return new Promise(function(resolve) { Preload.loadFile(a).then(() => { resolve(); }); }); });
       load_screens.setLoadMethod( (a, b) => { return new Promise(function(resolve) { Preload.loadFile("/screens/"+a).then(() => { resolve(); }); }); });
@@ -54,6 +74,11 @@ Game = class {
                 asset.load().then(() => { resolve() })
               });
             });
+
+            load_blocks.setLoadMethod( (a, b) => {
+              return new Promise(function(resolve) { Game.loadBlock(b).then(() => { resolve(); }); });
+            });
+
             assetsLoaded = true;
           } catch (e) {
 
@@ -62,6 +87,7 @@ Game = class {
       }
 
       fetch("scripts").then(response => response.json()).then(data => {
+        console.log(data)
 
         for (var c of data.main) { load_classes.add(c); }
         for (var c of data.screens) { load_screens.add(c); }
@@ -71,10 +97,17 @@ Game = class {
         for (var e of assets.images) { load_images.add(e[0], e[1], Image); }
         for (var e of assets.audios) { load_images.add(e[0], e[1], Audio); }
 
+        for (var blockid in data.data.blocks) {
+          load_blocks.add("Blocks", blockid);
+        }
+
+
         //load_images.add("cursor", "cursor.png", Image);
         ////load_images.add("lol", "lol.mp3", Audio);
 
         Preload.load(onProgress, () => {
+          console.log("finished")
+
           Utils.load();
           Input.load();
           Mouse.load();

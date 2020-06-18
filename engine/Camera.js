@@ -7,8 +7,8 @@ Camera = class {
 
   static update(delta) {
     if(this.entity_following != null) {
-      this.position.x = this.entity_following.position.x;
-      this.position.y = this.entity_following.position.y;
+      this.position.x = -this.entity_following.position.x;
+      this.position.y = -this.entity_following.position.y;
     }
   }
 

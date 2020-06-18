@@ -15,8 +15,8 @@ ScreenGameRender = class extends Screen {
 
     Render.translate(((1-Camera.dev_zoom)*Render.resolution.w)/2, ((1-Camera.dev_zoom)*Render.resolution.h)/2);
     Render.ctx.scale(Camera.dev_zoom, Camera.dev_zoom);
-    
-    MapGrid.render();
+
+    //MapGrid.render();
     World.render();
 
     Gui.render();

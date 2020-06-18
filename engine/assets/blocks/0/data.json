@@ -1,0 +1,9 @@
+{
+  "name": "Terra",
+  "extraLayers": [
+    {
+      "coords": [[-1, 0], [1, 0]],
+      "layer": "wall0"
+    }
+  ]
+}

@@ -4,14 +4,17 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookieParser = require('cookie-parser');
 
-process.env.is_glitch = true;
 
-const PORT = process.env.is_glitch ? 3000 : 7855;
-const IP = process.env.is_glitch ? "127.0.0.1" : "192.168.15.14";
-const classes = {
-  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "World", "Block", "GoogleApi", "Input", "MapGrid", "Entity", "Camera", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "Collision", "MasterServer", "ClientHandle"],
-  screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin", "ScreenGameRender"]
+const PORT = process.env.is_glitch ? 3000 : 3000; //7855
+const IP = "127.0.0.1";
+
+let classes = {
+  main: ["Assets", "Client", "Server", "Fade", "Gui", "Button", "MessageBox", "World", "Block", "GoogleApi", "Input", "MapGrid", "Entity", "Camera", "Mouse", "Utils", "Net", "Screens", "FakeSocket", "Collision", "MasterServer", "ClientHandle", "libs/Perlin"],
+  screens: ["ScreenMain", "ScreenLoading", "ScreenServersList", "ScreenGoogleLogin", "ScreenGameRender"],
+  data: {blocks: {}}
 };
+
+
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -31,15 +34,30 @@ app.get('*', function(req, res) {
 
 http.listen(PORT, IP, function() { console.log('[web] Listening on port ' + PORT); });
 
+
 function getIndexJS() { return `$.getScript("/engine/Game.js", ()=> { Game.start(); });`; }
+
 
 //----------------------
 
+
+
+
+
 require(`./engine/GameLoop.js`);
+require(`./engine/Storage.js`);
+require(`./engine/libs/Perlin.js`);
+
+
 for (var inc of classes.main) { require(`./engine/${inc}`); }
 
 Utils.load();
 
+Storage.getBlocksData((data) => {
+  classes.data.blocks = data;
+});
+
+return
 
 MasterServer.start(io);
 

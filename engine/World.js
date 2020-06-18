@@ -25,35 +25,37 @@ World = class {
 
     Render.translate(Render.resolution.w/2, Render.resolution.h/2);
 
+    var drawables = [];
 
     for (var k in MapGrid.blocks) {
       var tile = `${MapGrid.blocks[k].tile.x}:${MapGrid.blocks[k].tile.y}`
 
       if(server.blocks[tile]) {
+        server.blocks[tile].position.x = MapGrid.blocks[k].initial_position.x;
+        server.blocks[tile].position.y = MapGrid.blocks[k].initial_position.y;
 
-        var block = server.blocks[tile];
-
-        block.draw(MapGrid.blocks[k].position.x, MapGrid.blocks[k].position.y);
+        drawables.push({position: {x: server.blocks[tile].position.x, y: server.blocks[tile].position.y}, e: server.blocks[tile] });
       }
     }
 
 
-    var entities = [];
-
     for (var entity_id in server.entities) {
       var entity = server.entities[entity_id];
 
-      entities.push(entity);
-
+      drawables.push({position: {x: entity.position.x, y: entity.position.y}, e: entity});
     }
 
-    entities = entities.sort((a, b) => {
-      return b.position.y - a.position.y
+    drawables = drawables.sort((a, b) => {
+      return a.position.y - b.position.y
     });
 
-    for (var entity of entities) {
-      entity.draw(Camera.position.x - entity.position.x, Camera.position.y - entity.position.y);
+    Render.translate(Camera.position.x, Camera.position.y)
+
+    for (var obj of drawables) {
+      obj.e.draw(obj.position.x, obj.position.y);
     }
+
+    Render.translate(-Camera.position.x, -Camera.position.y)
 
 
 
